@@ -20,6 +20,7 @@ class keepalived(
   file {
     '/etc/keepalived/concat':
       ensure  => directory,
+      purge   => true,
       require => Package['keepalived'];
   }
 
