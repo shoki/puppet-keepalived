@@ -7,4 +7,7 @@ virtual_server <%= ip %> <%= port %> {
 <% if sorry_server -%>
   sorry_server <%= sorry_server %>
 <% end -%>
+<% if virtualhost -%>
+  virtualhost <%= virtualhost %>
+<% end -%>
 
