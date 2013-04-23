@@ -1,5 +1,5 @@
 define keepalived::virtual_server(
-  $ensure,
+  $ensure = present,
   $sorry_server = false,
   $persistence_timeout = '60',
   $delay_loop = 10,

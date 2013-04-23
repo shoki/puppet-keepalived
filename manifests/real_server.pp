@@ -28,7 +28,7 @@ define keepalived::real_server(
   $clean_name = regsubst($virtual_server_name, ' ', '-', 'G')
 
   concat::fragment {
-    "keepalived.virtual_server.${virtual_server_ip}.${virtual_server_port}.real_server.${ip}.${port}":
+    "keepalived.virtual_server.${clean_name}.${virtual_server_ip}.${virtual_server_port}.real_server.${ip}.${port}":
       content => template("keepalived/real_server.erb"),
       target  => "/etc/keepalived/concat/virtual_server.${clean_name}.${virtual_server_ip}:${virtual_server_port}",
       order   => 50;
