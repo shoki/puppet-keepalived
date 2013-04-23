@@ -12,21 +12,22 @@ define keepalived::virtual_server(
   $virtualhost = false
 ) {
 
+  $file_name =  "/etc/keepalived/concat/virtual_server." + regsubst($name, ' ', '_', 'G') + "${ip}.${port}"
+
   if ($ensure == 'present') {
-    concat {
-      "/etc/keepalived/concat/virtual_server.${ip}:${port}":
+    concat { $file_name:
         notify => Exec['concat_keepalived.conf'];
     }
 
     concat::fragment {
-      "keepalived.virtual_server.${ip}.${port}.header":
+      "${file_name}.header":
         content => template("keepalived/virtual_server.header.erb"),
-        target  => "/etc/keepalived/concat/virtual_server.${ip}:${port}",
+        target  => $file_name,
         order   => 01;
 
-      "keepalived.virtual_server.${ip}.${port}.footer":
+      "${file_name}.footer":
         content => template("keepalived/virtual_server.footer.erb"),
-        target  => "/etc/keepalived/concat/virtual_server.${ip}:${port}",
+        target  => $file_name,
         order   => 99;
     }
 
@@ -38,8 +39,7 @@ define keepalived::virtual_server(
         Keepalived::Real_server <<| virtual_server_name == $name |>>
     }
   } else {
-    file {
-      "/etc/keepalived/concat/virtual_server.${ip}:${port}": 
+    file { $file_name:
       ensure => $ensure,
     } 
   }
