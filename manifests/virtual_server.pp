@@ -12,31 +12,35 @@ define keepalived::virtual_server(
   $virtualhost = false
 ) {
 
-  concat {
-    "/etc/keepalived/concat/virtual_server.${ip}:${port}":
-      ensure  => $ensure,
-      notify => Exec['concat_keepalived.conf'];
-  }
+  if ($ensure == 'present') {
+    concat {
+      "/etc/keepalived/concat/virtual_server.${ip}:${port}":
+        notify => Exec['concat_keepalived.conf'];
+    }
 
-  concat::fragment {
-    "keepalived.virtual_server.${ip}.${port}.header":
-      ensure  => $ensure,
-      content => template("keepalived/virtual_server.header.erb"),
-      target  => "/etc/keepalived/concat/virtual_server.${ip}:${port}",
-      order   => 01;
+    concat::fragment {
+      "keepalived.virtual_server.${ip}.${port}.header":
+        content => template("keepalived/virtual_server.header.erb"),
+        target  => "/etc/keepalived/concat/virtual_server.${ip}:${port}",
+        order   => 01;
 
-    "keepalived.virtual_server.${ip}.${port}.footer":
-      ensure  => $ensure,
-      content => template("keepalived/virtual_server.footer.erb"),
-      target  => "/etc/keepalived/concat/virtual_server.${ip}:${port}",
-      order   => 99;
-  }
+      "keepalived.virtual_server.${ip}.${port}.footer":
+        content => template("keepalived/virtual_server.footer.erb"),
+        target  => "/etc/keepalived/concat/virtual_server.${ip}:${port}",
+        order   => 99;
+    }
 
-  if $bindto {
-    Keepalived::Real_server <<| virtual_server_name == $name |>> {
-      bindto => $bindto
+    if $bindto {
+      Keepalived::Real_server <<| virtual_server_name == $name |>> {
+        bindto => $bindto
+      }
+    } else {
+        Keepalived::Real_server <<| virtual_server_name == $name |>>
     }
   } else {
-    Keepalived::Real_server <<| virtual_server_name == $name |>>
+    file {
+      "/etc/keepalived/concat/virtual_server.${ip}:${port}": 
+      ensure => $ensure,
+    } 
   }
 }
