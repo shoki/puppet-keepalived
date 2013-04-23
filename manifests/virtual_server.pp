@@ -13,22 +13,22 @@ define keepalived::virtual_server(
 ) {
 
   $clean_name = regsubst($name, ' ', '-', 'G')
-  $file_name =  "/etc/keepalived/concat/virtual_server.${clean_name}.${ip}:${port}"
+  $file_name =  "/etc/keepalived/concat/virtual_server.${clean_name}.${ip}"
 
   if ($ensure == 'present') {
-    concat { $file_name:
+    concat { "$file_name:${port}":
         notify => Exec['concat_keepalived.conf'];
     }
 
     concat::fragment {
-      "${file_name}.header":
+      "${file_name}.${port}.header":
         content => template("keepalived/virtual_server.header.erb"),
-        target  => $file_name,
+        target  => "$file_name:${port}",
         order   => 01;
 
-      "${file_name}.footer":
+      "${file_name}.${port}.footer":
         content => template("keepalived/virtual_server.footer.erb"),
-        target  => $file_name,
+        target  => "$file_name:${port}",
         order   => 99;
     }
 
