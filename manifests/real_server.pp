@@ -25,10 +25,12 @@ define keepalived::real_server(
   validate_bool($inhibit_on_failure)
   validate_re($check_type, ['HTTP', 'SSL', 'TCP', 'SMTP'])
 
+  $clean_name = regsubst($virtual_server_name, ' ', '_', 'G')
+
   concat::fragment {
     "keepalived.virtual_server.${virtual_server_ip}.${virtual_server_port}.real_server.${ip}.${port}":
       content => template("keepalived/real_server.erb"),
-      target  => "/etc/keepalived/concat/virtual_server.${virtual_server_ip}:${virtual_server_port}",
+      target  => "/etc/keepalived/concat/virtual_server.${clean_name}.${virtual_server_ip}:${virtual_server_port}",
       order   => 50;
   }
 
