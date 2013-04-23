@@ -12,7 +12,7 @@ define keepalived::virtual_server(
   $virtualhost = false
 ) {
 
-  $clean_name = regsubst($name, ' ', '_', 'G')
+  $clean_name = regsubst($name, ' ', '-', 'G')
   $file_name =  "/etc/keepalived/concat/virtual_server.${clean_name}.${ip}:${port}"
 
   if ($ensure == 'present') {
